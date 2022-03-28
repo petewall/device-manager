@@ -1,0 +1,105 @@
+resources:
+  - name: bootloader
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:ESPete/bootloader.git
+      branch: main
+      private_key: ((github-repo-key))
+
+  - name: bootloader-version
+    type: semver
+    icon: github
+    source:
+      driver: git
+      uri: git@github.com:ESPete/bootloader.git
+      branch: main
+      file: version
+      private_key: ((github-repo-key))
+      commit_message: "[ci skip] bump to %version%"
+
+  - name: firmware-service
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:petewall/firmware-service.git
+      branch: main
+      private_key: ((github-repo-key))
+
+  - name: node-js
+    icon: nodejs
+    type: docker-image
+    source:
+      repository: node
+      tag: 14
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  - name: platformio
+    type: docker-image
+    icon: docker
+    source:
+      repository: petewall/platformio
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+jobs:
+  - name: test-firmware-service
+    plan:
+      - in_parallel:
+        - get: node-js
+        - get: source
+          resource: firmware-service
+          trigger: true
+      - task: lint
+        image: node-js
+        file: source/ci/tasks/test-lint.yaml
+      - task: unit-tests
+        image: node-js
+        file: source/ci/tasks/test-units.yaml
+
+  - name: build-bootloader
+    plan:
+      - in_parallel:
+        - get: platformio
+        - get: bootloader
+          trigger: true
+        - get: version
+          resource: bootloader-version
+          params:
+            bump: patch
+        - get: firmware-service
+      - task: check
+        image: platformio
+        config:
+          platform: linux
+          params:
+            FIRMWARE_VERSION: 0.0.0
+            GITHUB_SSH_KEY: ((github-repo-key))
+            OTA_HOSTNAME: http://wallserver.local
+            OTA_PORT: 8266
+            WIFI_SSID: fake-ssid
+            WIFI_PASSWORD: fake-password
+          inputs:
+            - name: bootloader
+          run:
+            dir: bootloader
+            path: make
+            args: ["check"]
+      - task: build
+        image: platformio
+        file: bootloader/ci/tasks/build.yml
+        params:
+          GITHUB_SSH_KEY: ((github-repo-key))
+          OTA_HOSTNAME: http://wallserver.local
+          OTA_PORT: 8266
+          WIFI_SSID: ((wifi-ssid))
+          WIFI_PASSWORD: ((wifi-password))
+      # - task: upload-firmware
+      #   file: ota-source/ci/tasks/upload.yml
+      #   params:
+      #     OTA_SERVICE: http://wallserver.local:8266
+      #     TYPE: ota-bootloader
+      # - put: bootloader-version
+      #   params:
+      #     file: version/version
