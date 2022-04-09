@@ -18,6 +18,14 @@ resources:
       private_key: ((github-repo-key))
       commit_message: "[ci skip] bump to %version%"
 
+  - name: device-service
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:petewall/device-service.git
+      branch: main
+      private_key: ((github-repo-key))
+
   - name: firmware-service
     type: git
     icon: github
@@ -28,10 +36,19 @@ resources:
 
   - name: node-js
     icon: nodejs
-    type: docker-image
+    type: registry-image
     source:
       repository: node
       tag: 14
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  - name: golang
+    icon: language-go
+    type: registry-image
+    source:
+      repository: golang
+      tag: 1.17-alpine
       username: ((dockerhub-username))
       password: ((dockerhub-password))
 
@@ -44,6 +61,23 @@ resources:
       password: ((dockerhub-password))
 
 jobs:
+  - name: test-device-service
+    plan:
+      - in_parallel:
+        - get: golang
+        - get: source
+          resource: device-service
+          trigger: true
+      - task: lint
+        image: golang
+        file: source/ci/tasks/test-lint.yaml
+      - task: unit-tests
+        image: golang
+        file: source/ci/tasks/test-units.yaml
+      - task: integration-tests
+        image: golang
+        file: source/ci/tasks/test-integration.yaml
+
   - name: test-firmware-service
     plan:
       - in_parallel:
@@ -57,12 +91,16 @@ jobs:
       - task: unit-tests
         image: node-js
         file: source/ci/tasks/test-units.yaml
+      - task: integration-tests
+        image: node-js
+        file: source/ci/tasks/test-integration.yaml
 
   - name: build-bootloader
     plan:
       - in_parallel:
         - get: platformio
-        - get: bootloader
+        - get: source
+          resource: bootloader
           trigger: true
         - get: version
           resource: bootloader-version
@@ -81,14 +119,14 @@ jobs:
             WIFI_SSID: fake-ssid
             WIFI_PASSWORD: fake-password
           inputs:
-            - name: bootloader
+            - name: source
           run:
-            dir: bootloader
+            dir: source
             path: make
             args: ["check"]
       - task: build
         image: platformio
-        file: bootloader/ci/tasks/build.yml
+        file: source/ci/tasks/build.yml
         params:
           GITHUB_SSH_KEY: ((github-repo-key))
           OTA_HOSTNAME: http://wallserver.local
