@@ -94,6 +94,14 @@ resources:
       username: ((dockerhub-username))
       password: ((dockerhub-password))
 
+  - name: ota-service-source
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:petewall/ota-service.git
+      branch: main
+      private_key: ((github-repo-key))
+
   - name: node-js
     icon: nodejs
     type: registry-image
@@ -108,7 +116,7 @@ resources:
     type: registry-image
     source:
       repository: golang
-      tag: 1.17-alpine
+      tag: 1.18-alpine
       username: ((dockerhub-username))
       password: ((dockerhub-password))
 
@@ -346,6 +354,20 @@ jobs:
             - arch: arm64
               os: linux
               digest_file: firmware-service-arm64/digest
+
+  - name: test-ota-service
+    plan:
+      - in_parallel:
+        - get: golang
+        - get: source
+          resource: ota-service-source
+          trigger: true
+      # - task: lint
+      #   image: node-js
+      #   file: source/ci/tasks/test-lint.yaml
+      - task: test
+        image: golang
+        file: source/ci/tasks/test.yaml
 
   - name: build-bootloader
     plan:
