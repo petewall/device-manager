@@ -1,0 +1,225 @@
+#@ load("@ytt:data", "data")
+resource_types:
+  - name: docker-manifest
+    type: docker-image
+    source:
+      repository: mbialon/concourse-docker-manifest-resource
+
+resources:
+  - name: bootloader
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:ESPete/bootloader.git
+      branch: main
+      private_key: ((github-repo-key))
+
+  - name: bootloader-version
+    type: semver
+    icon: github
+    source:
+      driver: git
+      uri: git@github.com:ESPete/bootloader.git
+      branch: main
+      file: version
+      private_key: ((github-repo-key))
+      commit_message: "[ci skip] bump to %version%"
+
+  #@ for/end service in data.values.services:
+  - name: #@ service.name
+    type: docker-manifest
+    icon: docker
+    source:
+      repository: #@ service.image.repo
+      tag: #@ service.image.tag
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  #@ for/end service in data.values.services:
+  - name: #@ service.name + "-amd64"
+    type: registry-image
+    icon: docker
+    source:
+      repository: #@ service.image.repo
+      tag: amd64
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  #@ for/end service in data.values.services:
+  - name: #@ service.name + "-arm64"
+    type: registry-image
+    icon: docker
+    source:
+      repository: #@ service.image.repo
+      tag: arm64
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  #@ for/end service in data.values.services:
+  - name: #@ service.name + "-source"
+    type: git
+    icon: github
+    source:
+      uri: #@ service.repo
+      branch: #@ service.branch
+      private_key: ((github-repo-key))
+
+  - name: golang
+    icon: language-go
+    type: registry-image
+    source:
+      repository: golang
+      tag: 1.18-alpine
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  - name: platformio
+    type: registry-image
+    icon: docker
+    source:
+      repository: petewall/platformio
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+jobs:
+  #@ for/end service in data.values.services:
+  - name: #@ "test-" + service.name
+    plan:
+      - in_parallel:
+        - get: golang
+        - get: source
+          resource: #@ service.name + "-source"
+          trigger: true
+      - task: lint
+        file: source/ci/tasks/test-lint.yaml
+      - task: unit-tests
+        image: golang
+        file: source/ci/tasks/test-units.yaml
+
+  #@ for/end service in data.values.services:
+  - name: #@ "build-" + service.name + "-arm64"
+    plan:
+      - get: source
+        resource: #@ service.name + "-source"
+        trigger: true
+        passed:
+          - #@ "test-" + service.name
+      - task: build-image
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: concourse/oci-build-task
+              username: ((dockerhub-username))
+              password: ((dockerhub-password))
+          inputs:
+            - name: source
+              path: .
+          outputs:
+            - name: image
+          params:
+            BUILD_ARG_GOOS: linux
+            BUILD_ARG_GOARCH: arm64
+            IMAGE_PLATFORM: linux/arm64
+          run:
+            path: build
+      - put: #@ service.name + "-arm64"
+        inputs: [ image ]
+        params:
+          image: image/image.tar
+
+  #@ for/end service in data.values.services:
+  - name: #@ "build-" + service.name + "-amd64"
+    plan:
+      - get: source
+        resource: #@ service.name + "-source"
+        trigger: true
+        passed:
+          - #@ "test-" + service.name
+      - task: build-image
+        privileged: true
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: concourse/oci-build-task
+              username: ((dockerhub-username))
+              password: ((dockerhub-password))
+          inputs:
+            - name: source
+              path: .
+          outputs:
+            - name: image
+          params:
+            BUILD_ARG_GOOS: linux
+            BUILD_ARG_GOARCH: amd64
+            IMAGE_PLATFORM: linux/amd64
+          run:
+            path: build
+      - put: #@ service.name + "-amd64"
+        inputs: [ image ]
+        params:
+          image: image/image.tar
+
+  #@ for/end service in data.values.services:
+  - name: #@ "push-" + service.name
+    plan:
+      - get: #@ service.name + "-amd64"
+        passed:
+          - #@ "build-" + service.name + "-amd64"
+        trigger: true
+      - get: #@ service.name + "-arm64"
+        passed:
+          - #@ "build-" + service.name + "-arm64"
+        trigger: true
+      - put: #@ service.name
+        params:
+          manifests:
+            - arch: amd64
+              os: linux
+              digest_file: #@ service.name + "-amd64/digest"
+            - arch: arm64
+              os: linux
+              digest_file: #@ service.name + "-arm64/digest"
+
+  - name: build-bootloader
+    plan:
+      - in_parallel:
+        - get: platformio
+        - get: source
+          resource: bootloader
+          trigger: true
+        - get: version
+          resource: bootloader-version
+          params:
+            bump: patch
+        - get: firmware-service-source
+      - task: check
+        image: platformio
+        config:
+          platform: linux
+          params:
+            FIRMWARE_VERSION: 0.0.0
+            GITHUB_SSH_KEY: ((github-repo-key))
+            OTA_HOSTNAME: http://wallserver.local
+            OTA_PORT: 8266
+            WIFI_SSID: fake-ssid
+            WIFI_PASSWORD: fake-password
+          inputs:
+            - name: source
+          run:
+            dir: source
+            path: make
+            args: ["check"]
+      - task: build
+        image: platformio
+        file: source/ci/tasks/build.yml
+        params:
+          GITHUB_SSH_KEY: ((github-repo-key))
+          OTA_HOSTNAME: http://wallserver.local
+          OTA_PORT: 8266
+          WIFI_SSID: ((wifi-ssid))
+          WIFI_PASSWORD: ((wifi-password))

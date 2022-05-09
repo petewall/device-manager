@@ -1,417 +1,462 @@
 resource_types:
-  - name: docker-manifest
-    type: docker-image
-    source:
-      repository: mbialon/concourse-docker-manifest-resource
-
+- name: docker-manifest
+  type: docker-image
+  source:
+    repository: mbialon/concourse-docker-manifest-resource
 resources:
-  - name: bootloader
-    type: git
-    icon: github
-    source:
-      uri: git@github.com:ESPete/bootloader.git
-      branch: main
-      private_key: ((github-repo-key))
-
-  - name: bootloader-version
-    type: semver
-    icon: github
-    source:
-      driver: git
-      uri: git@github.com:ESPete/bootloader.git
-      branch: main
-      file: version
-      private_key: ((github-repo-key))
-      commit_message: "[ci skip] bump to %version%"
-
-  - name: device-service
-    type: docker-manifest
-    icon: docker
-    source:
-      repository: petewall/device-service
-      tag: latest
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
-  - name: device-service-amd64
-    type: registry-image
-    icon: docker
-    source:
-      repository: petewall/device-service
-      tag: amd64
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
-  - name: device-service-arm64
-    type: registry-image
-    icon: docker
-    source:
-      repository: petewall/device-service
-      tag: arm64
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
-  - name: device-service-source
-    type: git
-    icon: github
-    source:
-      uri: git@github.com:petewall/device-service.git
-      branch: main
-      private_key: ((github-repo-key))
-
-  - name: firmware-service-source
-    type: git
-    icon: github
-    source:
-      uri: git@github.com:petewall/firmware-service.git
-      branch: main
-      private_key: ((github-repo-key))
-
-  - name: firmware-service
-    type: docker-manifest
-    icon: docker
-    source:
-      repository: petewall/firmware-service
-      tag: latest
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
-  - name: firmware-service-amd64
-    type: registry-image
-    icon: docker
-    source:
-      repository: petewall/firmware-service
-      tag: amd64
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
-  - name: firmware-service-arm64
-    type: registry-image
-    icon: docker
-    source:
-      repository: petewall/firmware-service
-      tag: arm64
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
-  - name: ota-service-source
-    type: git
-    icon: github
-    source:
-      uri: git@github.com:petewall/ota-service.git
-      branch: main
-      private_key: ((github-repo-key))
-
-  - name: node-js
-    icon: nodejs
-    type: registry-image
-    source:
-      repository: node
-      tag: 14
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
-  - name: golang
-    icon: language-go
-    type: registry-image
-    source:
-      repository: golang
-      tag: 1.18-alpine
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
-  - name: platformio
-    type: registry-image
-    icon: docker
-    source:
-      repository: petewall/platformio
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
-
+- name: bootloader
+  type: git
+  icon: github
+  source:
+    uri: git@github.com:ESPete/bootloader.git
+    branch: main
+    private_key: ((github-repo-key))
+- name: bootloader-version
+  type: semver
+  icon: github
+  source:
+    driver: git
+    uri: git@github.com:ESPete/bootloader.git
+    branch: main
+    file: version
+    private_key: ((github-repo-key))
+    commit_message: '[ci skip] bump to %version%'
+- name: device-service
+  type: docker-manifest
+  icon: docker
+  source:
+    repository: petewall/device-service
+    tag: latest
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: firmware-service
+  type: docker-manifest
+  icon: docker
+  source:
+    repository: petewall/devfirmwareice-service
+    tag: latest
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: ota-service
+  type: docker-manifest
+  icon: docker
+  source:
+    repository: petewall/ota-service
+    tag: latest
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: device-service-amd64
+  type: registry-image
+  icon: docker
+  source:
+    repository: petewall/device-service
+    tag: amd64
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: firmware-service-amd64
+  type: registry-image
+  icon: docker
+  source:
+    repository: petewall/devfirmwareice-service
+    tag: amd64
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: ota-service-amd64
+  type: registry-image
+  icon: docker
+  source:
+    repository: petewall/ota-service
+    tag: amd64
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: device-service-arm64
+  type: registry-image
+  icon: docker
+  source:
+    repository: petewall/device-service
+    tag: arm64
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: firmware-service-arm64
+  type: registry-image
+  icon: docker
+  source:
+    repository: petewall/devfirmwareice-service
+    tag: arm64
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: ota-service-arm64
+  type: registry-image
+  icon: docker
+  source:
+    repository: petewall/ota-service
+    tag: arm64
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: device-service-source
+  type: git
+  icon: github
+  source:
+    uri: git@github.com:petewall/device-service.git
+    branch: main
+    private_key: ((github-repo-key))
+- name: firmware-service-source
+  type: git
+  icon: github
+  source:
+    uri: git@github.com:petewall/firmware-service.git
+    branch: main
+    private_key: ((github-repo-key))
+- name: ota-service-source
+  type: git
+  icon: github
+  source:
+    uri: git@github.com:petewall/ota-service.git
+    branch: main
+    private_key: ((github-repo-key))
+- name: golang
+  icon: language-go
+  type: registry-image
+  source:
+    repository: golang
+    tag: 1.18-alpine
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+- name: platformio
+  type: registry-image
+  icon: docker
+  source:
+    repository: petewall/platformio
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
 jobs:
-  - name: test-device-service
-    plan:
-      - in_parallel:
-        - get: golang
-        - get: source
-          resource: device-service-source
-          trigger: true
-      - task: lint
-        image: golang
-        file: source/ci/tasks/test-lint.yaml
-      - task: unit-tests
-        image: golang
-        file: source/ci/tasks/test-units.yaml
-      - task: integration-tests
-        image: golang
-        file: source/ci/tasks/test-integration.yaml
-
-  - name: build-device-service-arm64
-    plan:
-      - get: source
-        resource: device-service-source
-        trigger: true
-        passed: [ test-device-service ]
-      - task: build-image
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: concourse/oci-build-task
-              username: ((dockerhub-username))
-              password: ((dockerhub-password))
-          inputs:
-            - name: source
-              path: .
-          outputs:
-            - name: image
-          params:
-            BUILD_ARG_GOOS: linux
-            BUILD_ARG_GOARCH: arm64
-            IMAGE_PLATFORM: linux/arm64
-          run:
-            path: build
-      - put: device-service-arm64
-        inputs: [ image ]
-        params:
-          image: image/image.tar
-
-  - name: build-device-service-amd64
-    plan:
-      - get: source
-        resource: device-service-source
-        trigger: true
-        passed: [ test-device-service ]
-      - task: build-image
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: concourse/oci-build-task
-              username: ((dockerhub-username))
-              password: ((dockerhub-password))
-          inputs:
-            - name: source
-              path: .
-          outputs:
-            - name: image
-          params:
-            BUILD_ARG_GOOS: linux
-            BUILD_ARG_GOARCH: amd64
-            IMAGE_PLATFORM: linux/amd64
-          run:
-            path: build
-      - put: device-service-amd64
-        inputs: [ image ]
-        params:
-          image: image/image.tar
-
-  - name: push-device-service
-    plan:
-      - get: device-service-amd64
-        passed: [ build-device-service-amd64 ]
-        trigger: true
-      - get: device-service-arm64
-        passed: [ build-device-service-arm64 ]
-        trigger: true
-      - put: device-service
-        params:
-          manifests:
-            - arch: amd64
-              os: linux
-              digest_file: device-service-amd64/digest
-            - arch: arm64
-              os: linux
-              digest_file: device-service-arm64/digest
-
-  - name: test-firmware-service
-    plan:
-      - in_parallel:
-        - get: node-js
-        - get: source
-          resource: firmware-service-source
-          trigger: true
-      - task: lint
-        image: node-js
-        file: source/ci/tasks/test-lint.yaml
-      - task: unit-tests
-        image: node-js
-        file: source/ci/tasks/test-units.yaml
-      # - task: integration-tests
-      #   image: node-js
-      #   file: source/ci/tasks/test-integration.yaml
-
-  # - name: build-firmware-service
-  #   plan:
-  #     - get: source
-  #       resource: firmware-service-source
-  #       trigger: true
-  #       passed: [ test-firmware-service ]
-  #     - task: build-image
-  #       privileged: true
-  #       config:
-  #         platform: linux
-  #         image_resource:
-  #           type: registry-image
-  #           source:
-  #             repository: concourse/oci-build-task
-  #             username: ((dockerhub-username))
-  #             password: ((dockerhub-password))
-  #         inputs:
-  #           - name: source
-  #             path: .
-  #         outputs:
-  #           - name: image
-  #         run:
-  #           path: build
-  #     - put: firmware-service
-  #       inputs: [ image ]
-  #       params:
-  #         image: image/image.tar
-
-  - name: build-firmware-service-arm64
-    plan:
-      - get: source
-        resource: firmware-service-source
-        trigger: true
-        passed: [ test-firmware-service ]
-      - task: build-image
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: concourse/oci-build-task
-              username: ((dockerhub-username))
-              password: ((dockerhub-password))
-          inputs:
-            - name: source
-              path: .
-          outputs:
-            - name: image
-          params:
-            BUILD_ARG_GOOS: linux
-            BUILD_ARG_GOARCH: arm64
-            IMAGE_PLATFORM: linux/arm64
-          run:
-            path: build
-      - put: firmware-service-arm64
-        inputs: [ image ]
-        params:
-          image: image/image.tar
-
-  - name: build-firmware-service-amd64
-    plan:
-      - get: source
-        resource: firmware-service-source
-        trigger: true
-        passed: [ test-firmware-service ]
-      - task: build-image
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: concourse/oci-build-task
-              username: ((dockerhub-username))
-              password: ((dockerhub-password))
-          inputs:
-            - name: source
-              path: .
-          outputs:
-            - name: image
-          params:
-            BUILD_ARG_GOOS: linux
-            BUILD_ARG_GOARCH: amd64
-            IMAGE_PLATFORM: linux/amd64
-          run:
-            path: build
-      - put: firmware-service-amd64
-        inputs: [ image ]
-        params:
-          image: image/image.tar
-
-  - name: push-firmware-service
-    plan:
-      - get: firmware-service-amd64
-        passed: [ build-firmware-service-amd64 ]
-        trigger: true
-      - get: firmware-service-arm64
-        passed: [ build-firmware-service-arm64 ]
-        trigger: true
-      - put: firmware-service
-        params:
-          manifests:
-            - arch: amd64
-              os: linux
-              digest_file: firmware-service-amd64/digest
-            - arch: arm64
-              os: linux
-              digest_file: firmware-service-arm64/digest
-
-  - name: test-ota-service
-    plan:
-      - in_parallel:
-        - get: golang
-        - get: source
-          resource: ota-service-source
-          trigger: true
-      # - task: lint
-      #   image: node-js
-      #   file: source/ci/tasks/test-lint.yaml
-      - task: test
-        image: golang
-        file: source/ci/tasks/test.yaml
-
-  - name: build-bootloader
-    plan:
-      - in_parallel:
-        - get: platformio
-        - get: source
-          resource: bootloader
-          trigger: true
-        - get: version
-          resource: bootloader-version
-          params:
-            bump: patch
-        - get: firmware-service-source
-      - task: check
-        image: platformio
-        config:
-          platform: linux
-          params:
-            FIRMWARE_VERSION: 0.0.0
-            GITHUB_SSH_KEY: ((github-repo-key))
-            OTA_HOSTNAME: http://wallserver.local
-            OTA_PORT: 8266
-            WIFI_SSID: fake-ssid
-            WIFI_PASSWORD: fake-password
-          inputs:
-            - name: source
-          run:
-            dir: source
-            path: make
-            args: ["check"]
-      - task: build
-        image: platformio
-        file: source/ci/tasks/build.yml
-        params:
-          GITHUB_SSH_KEY: ((github-repo-key))
-          OTA_HOSTNAME: http://wallserver.local
-          OTA_PORT: 8266
-          WIFI_SSID: ((wifi-ssid))
-          WIFI_PASSWORD: ((wifi-password))
-      # - task: upload-firmware
-      #   file: ota-source/ci/tasks/upload.yml
-      #   params:
-      #     OTA_SERVICE: http://wallserver.local:8266
-      #     TYPE: ota-bootloader
-      # - put: bootloader-version
-      #   params:
-      #     file: version/version
+- name: test-device-service
+  plan:
+  - in_parallel:
+    - get: golang
+    - get: source
+      resource: device-service-source
+      trigger: true
+  - task: lint
+    file: source/ci/tasks/test-lint.yaml
+  - task: unit-tests
+    image: golang
+    file: source/ci/tasks/test-units.yaml
+- name: test-firmware-service
+  plan:
+  - in_parallel:
+    - get: golang
+    - get: source
+      resource: firmware-service-source
+      trigger: true
+  - task: lint
+    file: source/ci/tasks/test-lint.yaml
+  - task: unit-tests
+    image: golang
+    file: source/ci/tasks/test-units.yaml
+- name: test-ota-service
+  plan:
+  - in_parallel:
+    - get: golang
+    - get: source
+      resource: ota-service-source
+      trigger: true
+  - task: lint
+    file: source/ci/tasks/test-lint.yaml
+  - task: unit-tests
+    image: golang
+    file: source/ci/tasks/test-units.yaml
+- name: build-device-service-arm64
+  plan:
+  - get: source
+    resource: device-service-source
+    trigger: true
+    passed:
+    - test-device-service
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub-username))
+          password: ((dockerhub-password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: arm64
+        IMAGE_PLATFORM: linux/arm64
+      run:
+        path: build
+  - put: device-service-arm64
+    inputs:
+    - image
+    params:
+      image: image/image.tar
+- name: build-firmware-service-arm64
+  plan:
+  - get: source
+    resource: firmware-service-source
+    trigger: true
+    passed:
+    - test-firmware-service
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub-username))
+          password: ((dockerhub-password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: arm64
+        IMAGE_PLATFORM: linux/arm64
+      run:
+        path: build
+  - put: firmware-service-arm64
+    inputs:
+    - image
+    params:
+      image: image/image.tar
+- name: build-ota-service-arm64
+  plan:
+  - get: source
+    resource: ota-service-source
+    trigger: true
+    passed:
+    - test-ota-service
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub-username))
+          password: ((dockerhub-password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: arm64
+        IMAGE_PLATFORM: linux/arm64
+      run:
+        path: build
+  - put: ota-service-arm64
+    inputs:
+    - image
+    params:
+      image: image/image.tar
+- name: build-device-service-amd64
+  plan:
+  - get: source
+    resource: device-service-source
+    trigger: true
+    passed:
+    - test-device-service
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub-username))
+          password: ((dockerhub-password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: amd64
+        IMAGE_PLATFORM: linux/amd64
+      run:
+        path: build
+  - put: device-service-amd64
+    inputs:
+    - image
+    params:
+      image: image/image.tar
+- name: build-firmware-service-amd64
+  plan:
+  - get: source
+    resource: firmware-service-source
+    trigger: true
+    passed:
+    - test-firmware-service
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub-username))
+          password: ((dockerhub-password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: amd64
+        IMAGE_PLATFORM: linux/amd64
+      run:
+        path: build
+  - put: firmware-service-amd64
+    inputs:
+    - image
+    params:
+      image: image/image.tar
+- name: build-ota-service-amd64
+  plan:
+  - get: source
+    resource: ota-service-source
+    trigger: true
+    passed:
+    - test-ota-service
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub-username))
+          password: ((dockerhub-password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: amd64
+        IMAGE_PLATFORM: linux/amd64
+      run:
+        path: build
+  - put: ota-service-amd64
+    inputs:
+    - image
+    params:
+      image: image/image.tar
+- name: push-device-service
+  plan:
+  - get: device-service-amd64
+    passed:
+    - build-device-service-amd64
+    trigger: true
+  - get: device-service-arm64
+    passed:
+    - build-device-service-arm64
+    trigger: true
+  - put: device-service
+    params:
+      manifests:
+      - arch: amd64
+        os: linux
+        digest_file: device-service-amd64/digest
+      - arch: arm64
+        os: linux
+        digest_file: device-service-arm64/digest
+- name: push-firmware-service
+  plan:
+  - get: firmware-service-amd64
+    passed:
+    - build-firmware-service-amd64
+    trigger: true
+  - get: firmware-service-arm64
+    passed:
+    - build-firmware-service-arm64
+    trigger: true
+  - put: firmware-service
+    params:
+      manifests:
+      - arch: amd64
+        os: linux
+        digest_file: firmware-service-amd64/digest
+      - arch: arm64
+        os: linux
+        digest_file: firmware-service-arm64/digest
+- name: push-ota-service
+  plan:
+  - get: ota-service-amd64
+    passed:
+    - build-ota-service-amd64
+    trigger: true
+  - get: ota-service-arm64
+    passed:
+    - build-ota-service-arm64
+    trigger: true
+  - put: ota-service
+    params:
+      manifests:
+      - arch: amd64
+        os: linux
+        digest_file: ota-service-amd64/digest
+      - arch: arm64
+        os: linux
+        digest_file: ota-service-arm64/digest
+- name: build-bootloader
+  plan:
+  - in_parallel:
+    - get: platformio
+    - get: source
+      resource: bootloader
+      trigger: true
+    - get: version
+      resource: bootloader-version
+      params:
+        bump: patch
+    - get: firmware-service-source
+  - task: check
+    image: platformio
+    config:
+      platform: linux
+      params:
+        FIRMWARE_VERSION: 0.0.0
+        GITHUB_SSH_KEY: ((github-repo-key))
+        OTA_HOSTNAME: http://wallserver.local
+        OTA_PORT: 8266
+        WIFI_SSID: fake-ssid
+        WIFI_PASSWORD: fake-password
+      inputs:
+      - name: source
+      run:
+        dir: source
+        path: make
+        args:
+        - check
+  - task: build
+    image: platformio
+    file: source/ci/tasks/build.yml
+    params:
+      GITHUB_SSH_KEY: ((github-repo-key))
+      OTA_HOSTNAME: http://wallserver.local
+      OTA_PORT: 8266
+      WIFI_SSID: ((wifi-ssid))
+      WIFI_PASSWORD: ((wifi-password))

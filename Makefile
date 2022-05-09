@@ -1,7 +1,10 @@
 .PHONY: set-pipeline
 
 deploy-device-manager: deployment/device-service.yaml
-	kapp deploy -a device-manager -f deployment/device-service.yaml --diff-changes
+	kapp deploy -a device-manager -f deployment --diff-changes
 
-set-pipeline:
+ci/pipeline.yaml: ci/pipeline-template.yaml ci/pipeline-values.yaml
+	ytt -f ci/pipeline-template.yaml -f ci/pipeline-values.yaml > ci/pipeline.yaml
+
+set-pipeline: ci/pipeline.yaml
 	fly -t wallhouse set-pipeline --pipeline device-manager --config ci/pipeline.yaml --load-vars-from ../secrets/pipeline-creds.json

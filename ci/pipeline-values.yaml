@@ -1,0 +1,21 @@
+#@data/values
+---
+services:
+- name: device-service
+  repo: git@github.com:petewall/device-service.git
+  branch: main
+  image:
+    repo: petewall/device-service
+    tag: latest
+- name: firmware-service
+  repo: git@github.com:petewall/firmware-service.git
+  branch: main
+  image:
+    repo: petewall/devfirmwareice-service
+    tag: latest
+- name: ota-service
+  repo: git@github.com:petewall/ota-service.git
+  branch: main
+  image:
+    repo: petewall/ota-service
+    tag: latest
