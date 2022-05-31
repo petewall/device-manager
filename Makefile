@@ -8,3 +8,11 @@ ci/pipeline.yaml: ci/pipeline-template.yaml ci/pipeline-values.yaml
 
 set-pipeline: ci/pipeline.yaml
 	fly -t wallhouse set-pipeline --pipeline device-manager --config ci/pipeline.yaml --load-vars-from ../secrets/pipeline-creds.json
+
+deploy:
+	kapp deploy \
+		--app device-manager \
+		--into-ns device-manager \
+		--file deployment/namespace.yaml \
+		--file deployment/device-service.yaml \
+		--file deployment/firmware-service.yaml

@@ -1,12 +1,8 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: device-manager
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: firmware-service-db-storage
+  name: firmware-store
   namespace: device-manager
 spec:
   accessModes:
@@ -19,44 +15,51 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: firmware-service-db
+  name: firmware-service
   namespace: device-manager
   labels:
-    app: firmware-service-db
+    app: firmware-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: firmware-service-db
+      app: firmware-service
   template:
     metadata:
       labels:
-        app: firmware-service-db
+        app: firmware-service
     spec:
       containers:
-      - name: redis
-        image: redis:6.2-alpine
-        command: ['redis-server', '--save', '60' '1']
+      - image: petewall/firmware-service
+        name: firmware-service
+        env:
+          - name: PORT
+            value: "5051"
+          - name: FIRMWARE_STORE_TYPE
+            value: filesystem
+          - name: FILESYSTEM_FIRMWARE_STORE_PATH
+            value: /var/data
         volumeMounts:
-        - mountPath: /data
-          name: firmware-service-db-storage
+        - mountPath: "/var/data"
+          name: firmware-store
       volumes:
-        - name: firmware-service-db-storage
+        - name: firmware-store
           persistentVolumeClaim:
-            claimName: firmware-service-db-storage
+            claimName: firmware-store
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: firmware-service-db
+  name: firmware-service
   namespace: device-manager
   labels:
-    app: firmware-service-db
+    app: firmware-service
 spec:
-  selector:
-    app: firmware-service-db
-  type: ClusterIP
   ports:
-  - port: 27017
+  - port: 5051
     protocol: TCP
-    targetPort: 27017
+    nodePort: 30051
+    targetPort: 5051
+  selector:
+    app: firmware-service
+  type: NodePort
