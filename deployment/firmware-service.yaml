@@ -63,3 +63,23 @@ spec:
   selector:
     app: firmware-service
   type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: firmware-service
+  namespace: device-manager
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: lab.petewall.net
+    http:
+      paths:
+      - path: /firmware
+        pathType: Exact
+        backend:
+          service:
+            name: firmware-service
+            port:
+              number: 5051

@@ -12,6 +12,7 @@ set-pipeline: ci/pipeline.yaml
 deploy:
 	kapp deploy \
 		--app device-manager \
+		--diff-changes \
 		--into-ns device-manager \
 		--file deployment/namespace.yaml \
 		--file deployment/device-service.yaml \
