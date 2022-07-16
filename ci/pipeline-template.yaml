@@ -12,7 +12,7 @@ resources:
     source:
       uri: git@github.com:ESPete/bootloader.git
       branch: main
-      private_key: ((github-repo-key))
+      private_key: ((github.private_key))
 
   - name: bootloader-version
     type: semver
@@ -22,7 +22,7 @@ resources:
       uri: git@github.com:ESPete/bootloader.git
       branch: main
       file: version
-      private_key: ((github-repo-key))
+      private_key: ((github.private_key))
       commit_message: "[ci skip] bump to %version%"
 
   #@ for/end service in data.values.services:
@@ -32,8 +32,8 @@ resources:
     source:
       repository: #@ service.image.repo
       tag: #@ service.image.tag
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
+      username: ((dockerhub.username))
+      password: ((dockerhub.password))
 
   #@ for/end service in data.values.services:
   - name: #@ service.name + "-amd64"
@@ -42,8 +42,8 @@ resources:
     source:
       repository: #@ service.image.repo
       tag: amd64
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
+      username: ((dockerhub.username))
+      password: ((dockerhub.password))
 
   #@ for/end service in data.values.services:
   - name: #@ service.name + "-arm64"
@@ -52,8 +52,8 @@ resources:
     source:
       repository: #@ service.image.repo
       tag: arm64
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
+      username: ((dockerhub.username))
+      password: ((dockerhub.password))
 
   #@ for/end service in data.values.services:
   - name: #@ service.name + "-source"
@@ -62,7 +62,7 @@ resources:
     source:
       uri: #@ service.repo
       branch: #@ service.branch
-      private_key: ((github-repo-key))
+      private_key: ((github.private_key))
 
   - name: golang
     icon: language-go
@@ -70,16 +70,16 @@ resources:
     source:
       repository: golang
       tag: 1.18-alpine
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
+      username: ((dockerhub.username))
+      password: ((dockerhub.password))
 
   - name: platformio
     type: registry-image
     icon: docker
     source:
       repository: petewall/platformio
-      username: ((dockerhub-username))
-      password: ((dockerhub-password))
+      username: ((dockerhub.username))
+      password: ((dockerhub.password))
 
 jobs:
   #@ for/end service in data.values.services:
@@ -112,8 +112,8 @@ jobs:
             type: registry-image
             source:
               repository: concourse/oci-build-task
-              username: ((dockerhub-username))
-              password: ((dockerhub-password))
+              username: ((dockerhub.username))
+              password: ((dockerhub.password))
           inputs:
             - name: source
               path: .
@@ -146,8 +146,8 @@ jobs:
             type: registry-image
             source:
               repository: concourse/oci-build-task
-              username: ((dockerhub-username))
-              password: ((dockerhub-password))
+              username: ((dockerhub.username))
+              password: ((dockerhub.password))
           inputs:
             - name: source
               path: .
@@ -203,7 +203,7 @@ jobs:
           platform: linux
           params:
             FIRMWARE_VERSION: 0.0.0
-            GITHUB_SSH_KEY: ((github-repo-key))
+            GITHUB_SSH_KEY: ((github.private_key))
             OTA_HOSTNAME: http://lab.petewall.net/firmware
             OTA_PORT: 80
             WIFI_SSID: fake-ssid
@@ -218,11 +218,11 @@ jobs:
         image: platformio
         file: source/ci/tasks/build.yml
         params:
-          GITHUB_SSH_KEY: ((github-repo-key))
+          GITHUB_SSH_KEY: ((github.private_key))
           OTA_HOSTNAME: http://lab.petewall.net/firmware
           OTA_PORT: 80
-          WIFI_SSID: ((wifi-ssid))
-          WIFI_PASSWORD: ((wifi-password))
+          WIFI_SSID: ((wifi.ssid))
+          WIFI_PASSWORD: ((wifi.password))
       - task: upload
         image: platformio
         file: firmware-service-source/ci/tasks/upload.yml

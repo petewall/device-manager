@@ -10,7 +10,7 @@ resources:
   source:
     uri: git@github.com:ESPete/bootloader.git
     branch: main
-    private_key: ((github-repo-key))
+    private_key: ((github.private_key))
 - name: bootloader-version
   type: semver
   icon: github
@@ -19,7 +19,7 @@ resources:
     uri: git@github.com:ESPete/bootloader.git
     branch: main
     file: version
-    private_key: ((github-repo-key))
+    private_key: ((github.private_key))
     commit_message: '[ci skip] bump to %version%'
 - name: device-service
   type: docker-manifest
@@ -27,108 +27,108 @@ resources:
   source:
     repository: petewall/device-service
     tag: latest
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: firmware-service
   type: docker-manifest
   icon: docker
   source:
     repository: petewall/devfirmwareice-service
     tag: latest
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: ota-service
   type: docker-manifest
   icon: docker
   source:
     repository: petewall/ota-service
     tag: latest
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: device-service-amd64
   type: registry-image
   icon: docker
   source:
     repository: petewall/device-service
     tag: amd64
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: firmware-service-amd64
   type: registry-image
   icon: docker
   source:
     repository: petewall/devfirmwareice-service
     tag: amd64
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: ota-service-amd64
   type: registry-image
   icon: docker
   source:
     repository: petewall/ota-service
     tag: amd64
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: device-service-arm64
   type: registry-image
   icon: docker
   source:
     repository: petewall/device-service
     tag: arm64
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: firmware-service-arm64
   type: registry-image
   icon: docker
   source:
     repository: petewall/devfirmwareice-service
     tag: arm64
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: ota-service-arm64
   type: registry-image
   icon: docker
   source:
     repository: petewall/ota-service
     tag: arm64
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: device-service-source
   type: git
   icon: github
   source:
     uri: git@github.com:petewall/device-service.git
     branch: main
-    private_key: ((github-repo-key))
+    private_key: ((github.private_key))
 - name: firmware-service-source
   type: git
   icon: github
   source:
     uri: git@github.com:petewall/firmware-service.git
     branch: main
-    private_key: ((github-repo-key))
+    private_key: ((github.private_key))
 - name: ota-service-source
   type: git
   icon: github
   source:
     uri: git@github.com:petewall/ota-service.git
     branch: main
-    private_key: ((github-repo-key))
+    private_key: ((github.private_key))
 - name: golang
   icon: language-go
   type: registry-image
   source:
     repository: golang
     tag: 1.18-alpine
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: platformio
   type: registry-image
   icon: docker
   source:
     repository: petewall/platformio
-    username: ((dockerhub-username))
-    password: ((dockerhub-password))
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 jobs:
 - name: test-device-service
   plan:
@@ -181,8 +181,8 @@ jobs:
         type: registry-image
         source:
           repository: concourse/oci-build-task
-          username: ((dockerhub-username))
-          password: ((dockerhub-password))
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
       inputs:
       - name: source
         path: .
@@ -214,8 +214,8 @@ jobs:
         type: registry-image
         source:
           repository: concourse/oci-build-task
-          username: ((dockerhub-username))
-          password: ((dockerhub-password))
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
       inputs:
       - name: source
         path: .
@@ -247,8 +247,8 @@ jobs:
         type: registry-image
         source:
           repository: concourse/oci-build-task
-          username: ((dockerhub-username))
-          password: ((dockerhub-password))
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
       inputs:
       - name: source
         path: .
@@ -280,8 +280,8 @@ jobs:
         type: registry-image
         source:
           repository: concourse/oci-build-task
-          username: ((dockerhub-username))
-          password: ((dockerhub-password))
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
       inputs:
       - name: source
         path: .
@@ -313,8 +313,8 @@ jobs:
         type: registry-image
         source:
           repository: concourse/oci-build-task
-          username: ((dockerhub-username))
-          password: ((dockerhub-password))
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
       inputs:
       - name: source
         path: .
@@ -346,8 +346,8 @@ jobs:
         type: registry-image
         source:
           repository: concourse/oci-build-task
-          username: ((dockerhub-username))
-          password: ((dockerhub-password))
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
       inputs:
       - name: source
         path: .
@@ -439,7 +439,7 @@ jobs:
       platform: linux
       params:
         FIRMWARE_VERSION: 0.0.0
-        GITHUB_SSH_KEY: ((github-repo-key))
+        GITHUB_SSH_KEY: ((github.private_key))
         OTA_HOSTNAME: http://lab.petewall.net/firmware
         OTA_PORT: 80
         WIFI_SSID: fake-ssid
@@ -455,11 +455,11 @@ jobs:
     image: platformio
     file: source/ci/tasks/build.yml
     params:
-      GITHUB_SSH_KEY: ((github-repo-key))
+      GITHUB_SSH_KEY: ((github.private_key))
       OTA_HOSTNAME: http://lab.petewall.net/firmware
       OTA_PORT: 80
-      WIFI_SSID: ((wifi-ssid))
-      WIFI_PASSWORD: ((wifi-password))
+      WIFI_SSID: ((wifi.ssid))
+      WIFI_PASSWORD: ((wifi.password))
   - task: upload
     image: platformio
     file: firmware-service-source/ci/tasks/upload.yml
