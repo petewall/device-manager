@@ -1,3 +1,24 @@
+---
+apiVersion: kapp.k14s.io/v1alpha1
+kind: Config
+rebaseRules:
+- path: [metadata, annotations, volume.kubernetes.io/selected-node]
+  type: copy
+  sources: [existing, new]
+  resourceMatchers:
+  - kindNamespaceNameMatcher:
+      kind: PersistentVolumeClaim
+      name: device-service-db-storage
+      namespace: device-manager
+- path: [metadata, annotations, volume.kubernetes.io/storage-provisioner]
+  type: copy
+  sources: [existing, new]
+  resourceMatchers:
+  - kindNamespaceNameMatcher:
+      kind: PersistentVolumeClaim
+      name: device-service-db-storage
+      namespace: device-manager
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -100,3 +121,23 @@ spec:
   selector:
     app: device-service
   type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: device-service
+  namespace: device-manager
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: lab.petewall.net
+    http:
+      paths:
+      - path: /device
+        pathType: Exact
+        backend:
+          service:
+            name: device-service
+            port:
+              number: 5050
