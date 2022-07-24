@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ota-service
+  namespace: device-manager
+  labels:
+    app: ota-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ota-service
+  template:
+    metadata:
+      labels:
+        app: ota-service
+    spec:
+      containers:
+      - image: petewall/ota-service
+        name: ota-service
+        env:
+          - name: PORT
+            value: "5052"
+          - name: DEVICE_SERVICE
+            value: device-service.device-manager.svc.cluster.local
+          - name: FIRMWARE_SERVICE
+            value: firmware-service.device-manager.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ota-service
+  namespace: device-manager
+  labels:
+    app: ota-service
+spec:
+  type: ClusterIP
+  selector:
+    app: ota-service
+  ports:
+  - port: 5052
+    protocol: TCP
+    targetPort: 5052
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ota-service
+  namespace: device-manager
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: device.petewall.net
+    http:
+      paths:
+      - path: /update
+        pathType: Exact
+        backend:
+          service:
+            name: ota-service
+            port:
+              number: 5052

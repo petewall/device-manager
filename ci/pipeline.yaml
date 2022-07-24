@@ -440,7 +440,7 @@ jobs:
       params:
         FIRMWARE_VERSION: 0.0.0
         GITHUB_SSH_KEY: ((github.private_key))
-        OTA_HOSTNAME: http://lab.petewall.net/firmware
+        OTA_HOSTNAME: http://devices.petewall.net/firmware
         OTA_PORT: 80
         WIFI_SSID: fake-ssid
         WIFI_PASSWORD: fake-password

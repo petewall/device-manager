@@ -69,9 +69,9 @@ metadata:
   labels:
     app: device-service-db
 spec:
+  type: ClusterIP
   selector:
     app: device-service-db
-  type: ClusterIP
   ports:
   - port: 6379
     protocol: TCP
@@ -113,14 +113,13 @@ metadata:
   labels:
     app: device-service
 spec:
+  type: ClusterIP
+  selector:
+    app: device-service
   ports:
   - port: 5050
     protocol: TCP
-    nodePort: 30050
     targetPort: 5050
-  selector:
-    app: device-service
-  type: NodePort
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -131,10 +130,10 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: lab.petewall.net
+  - host: device.petewall.net
     http:
       paths:
-      - path: /device
+      - path: /devices
         pathType: Exact
         backend:
           service:

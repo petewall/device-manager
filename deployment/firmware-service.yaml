@@ -75,14 +75,13 @@ metadata:
   labels:
     app: firmware-service
 spec:
+  type: ClusterIP
+  selector:
+    app: firmware-service
   ports:
   - port: 5051
     protocol: TCP
-    nodePort: 30051
     targetPort: 5051
-  selector:
-    app: firmware-service
-  type: NodePort
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -93,7 +92,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: lab.petewall.net
+  - host: device.petewall.net
     http:
       paths:
       - path: /firmware
