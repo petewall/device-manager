@@ -1,0 +1,32 @@
+---
+apiVersion: imgpkg.carvel.dev/v1alpha1
+images:
+- annotations:
+    kbld.carvel.dev/id: petewall/device-service
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: latest
+          url: petewall/device-service
+  image: index.docker.io/petewall/device-service@sha256:4447f524c31b8627c354efdceb078bc1eaf3b7172795fc0617b02a0891968c98
+- annotations:
+    kbld.carvel.dev/id: petewall/firmware-service
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: latest
+          url: petewall/firmware-service
+  image: index.docker.io/petewall/firmware-service@sha256:20111d198d268459f8d9fcb43ab280fd93282c6e72d0333e0aff868138ee78a3
+- annotations:
+    kbld.carvel.dev/id: petewall/ota-service
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: latest
+          url: petewall/ota-service
+  image: index.docker.io/petewall/ota-service@sha256:0d7668d6db890eaba06ec8cf4a233d96803cd17348f905c7bcaf8133ef98a27f
+- annotations:
+    kbld.carvel.dev/id: redis:6.2-alpine
+    kbld.carvel.dev/origins: |
+      - resolved:
+          tag: 6.2-alpine
+          url: redis:6.2-alpine
+  image: index.docker.io/library/redis@sha256:fad643c78fadb65fdfe79e19a37b0923ae48e69b4a1e7c6be2e94e080f2554b4
+kind: ImagesLock
