@@ -1,9 +1,0 @@
-apiVersion: imgpkg.carvel.dev/v1alpha1
-kind: Bundle
-metadata:
-  name: device-manager
-authors:
-- name: Pete Wall
-  email: pete@petewall.net
-websites:
-- url: petewall.net

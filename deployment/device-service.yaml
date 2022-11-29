@@ -130,10 +130,10 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: device.petewall.net
+  - host: cluster.petewall.net
     http:
       paths:
-      - path: /devices
+      - path: /device/api/devices
         pathType: Exact
         backend:
           service:
