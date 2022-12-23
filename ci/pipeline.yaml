@@ -1,11 +1,6 @@
-resource_types:
-- name: docker-manifest
-  type: docker-image
-  source:
-    repository: mbialon/concourse-docker-manifest-resource
 resources:
 - name: device-service
-  type: docker-manifest
+  type: registry-image
   icon: docker
   source:
     repository: petewall/device-service
@@ -13,67 +8,19 @@ resources:
     username: ((dockerhub.username))
     password: ((dockerhub.password))
 - name: firmware-service
-  type: docker-manifest
+  type: registry-image
   icon: docker
   source:
-    repository: petewall/devfirmwareice-service
+    repository: petewall/firmware-service
     tag: latest
     username: ((dockerhub.username))
     password: ((dockerhub.password))
 - name: ota-service
-  type: docker-manifest
+  type: registry-image
   icon: docker
   source:
     repository: petewall/ota-service
     tag: latest
-    username: ((dockerhub.username))
-    password: ((dockerhub.password))
-- name: device-service-amd64
-  type: registry-image
-  icon: docker
-  source:
-    repository: petewall/device-service
-    tag: amd64
-    username: ((dockerhub.username))
-    password: ((dockerhub.password))
-- name: firmware-service-amd64
-  type: registry-image
-  icon: docker
-  source:
-    repository: petewall/devfirmwareice-service
-    tag: amd64
-    username: ((dockerhub.username))
-    password: ((dockerhub.password))
-- name: ota-service-amd64
-  type: registry-image
-  icon: docker
-  source:
-    repository: petewall/ota-service
-    tag: amd64
-    username: ((dockerhub.username))
-    password: ((dockerhub.password))
-- name: device-service-arm64
-  type: registry-image
-  icon: docker
-  source:
-    repository: petewall/device-service
-    tag: arm64
-    username: ((dockerhub.username))
-    password: ((dockerhub.password))
-- name: firmware-service-arm64
-  type: registry-image
-  icon: docker
-  source:
-    repository: petewall/devfirmwareice-service
-    tag: arm64
-    username: ((dockerhub.username))
-    password: ((dockerhub.password))
-- name: ota-service-arm64
-  type: registry-image
-  icon: docker
-  source:
-    repository: petewall/ota-service
-    tag: arm64
     username: ((dockerhub.username))
     password: ((dockerhub.password))
 - name: device-service-source
@@ -142,106 +89,7 @@ jobs:
   - task: unit-tests
     image: golang
     file: source/ci/tasks/test-units.yaml
-- name: build-device-service-arm64
-  plan:
-  - get: source
-    resource: device-service-source
-    trigger: true
-    passed:
-    - test-device-service
-  - task: build-image
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: concourse/oci-build-task
-          username: ((dockerhub.username))
-          password: ((dockerhub.password))
-      inputs:
-      - name: source
-        path: .
-      outputs:
-      - name: image
-      params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: arm64
-        IMAGE_PLATFORM: linux/arm64
-      run:
-        path: build
-  - put: device-service-arm64
-    inputs:
-    - image
-    params:
-      image: image/image.tar
-- name: build-firmware-service-arm64
-  plan:
-  - get: source
-    resource: firmware-service-source
-    trigger: true
-    passed:
-    - test-firmware-service
-  - task: build-image
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: concourse/oci-build-task
-          username: ((dockerhub.username))
-          password: ((dockerhub.password))
-      inputs:
-      - name: source
-        path: .
-      outputs:
-      - name: image
-      params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: arm64
-        IMAGE_PLATFORM: linux/arm64
-      run:
-        path: build
-  - put: firmware-service-arm64
-    inputs:
-    - image
-    params:
-      image: image/image.tar
-- name: build-ota-service-arm64
-  plan:
-  - get: source
-    resource: ota-service-source
-    trigger: true
-    passed:
-    - test-ota-service
-  - task: build-image
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: concourse/oci-build-task
-          username: ((dockerhub.username))
-          password: ((dockerhub.password))
-      inputs:
-      - name: source
-        path: .
-      outputs:
-      - name: image
-      params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: arm64
-        IMAGE_PLATFORM: linux/arm64
-      run:
-        path: build
-  - put: ota-service-arm64
-    inputs:
-    - image
-    params:
-      image: image/image.tar
-- name: build-device-service-amd64
+- name: build-device-service
   plan:
   - get: source
     resource: device-service-source
@@ -269,131 +117,74 @@ jobs:
         IMAGE_PLATFORM: linux/amd64
       run:
         path: build
-  - put: device-service-amd64
-    inputs:
-    - image
-    params:
-      image: image/image.tar
-- name: build-firmware-service-amd64
-  plan:
-  - get: source
-    resource: firmware-service-source
-    trigger: true
-    passed:
-    - test-firmware-service
-  - task: build-image
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: concourse/oci-build-task
-          username: ((dockerhub.username))
-          password: ((dockerhub.password))
-      inputs:
-      - name: source
-        path: .
-      outputs:
-      - name: image
-      params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: amd64
-        IMAGE_PLATFORM: linux/amd64
-      run:
-        path: build
-  - put: firmware-service-amd64
-    inputs:
-    - image
-    params:
-      image: image/image.tar
-- name: build-ota-service-amd64
-  plan:
-  - get: source
-    resource: ota-service-source
-    trigger: true
-    passed:
-    - test-ota-service
-  - task: build-image
-    privileged: true
-    config:
-      platform: linux
-      image_resource:
-        type: registry-image
-        source:
-          repository: concourse/oci-build-task
-          username: ((dockerhub.username))
-          password: ((dockerhub.password))
-      inputs:
-      - name: source
-        path: .
-      outputs:
-      - name: image
-      params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: amd64
-        IMAGE_PLATFORM: linux/amd64
-      run:
-        path: build
-  - put: ota-service-amd64
-    inputs:
-    - image
-    params:
-      image: image/image.tar
-- name: push-device-service
-  plan:
-  - get: device-service-amd64
-    passed:
-    - build-device-service-amd64
-    trigger: true
-  - get: device-service-arm64
-    passed:
-    - build-device-service-arm64
-    trigger: true
   - put: device-service
+    inputs:
+    - image
     params:
-      manifests:
-      - arch: amd64
-        os: linux
-        digest_file: device-service-amd64/digest
-      - arch: arm64
-        os: linux
-        digest_file: device-service-arm64/digest
-- name: push-firmware-service
+      image: image/image.tar
+- name: build-firmware-service
   plan:
-  - get: firmware-service-amd64
-    passed:
-    - build-firmware-service-amd64
+  - get: source
+    resource: firmware-service-source
     trigger: true
-  - get: firmware-service-arm64
     passed:
-    - build-firmware-service-arm64
-    trigger: true
+    - test-firmware-service
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: amd64
+        IMAGE_PLATFORM: linux/amd64
+      run:
+        path: build
   - put: firmware-service
+    inputs:
+    - image
     params:
-      manifests:
-      - arch: amd64
-        os: linux
-        digest_file: firmware-service-amd64/digest
-      - arch: arm64
-        os: linux
-        digest_file: firmware-service-arm64/digest
-- name: push-ota-service
+      image: image/image.tar
+- name: build-ota-service
   plan:
-  - get: ota-service-amd64
-    passed:
-    - build-ota-service-amd64
+  - get: source
+    resource: ota-service-source
     trigger: true
-  - get: ota-service-arm64
     passed:
-    - build-ota-service-arm64
-    trigger: true
+    - test-ota-service
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: amd64
+        IMAGE_PLATFORM: linux/amd64
+      run:
+        path: build
   - put: ota-service
+    inputs:
+    - image
     params:
-      manifests:
-      - arch: amd64
-        os: linux
-        digest_file: ota-service-amd64/digest
-      - arch: arm64
-        os: linux
-        digest_file: ota-service-arm64/digest
+      image: image/image.tar

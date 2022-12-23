@@ -49,10 +49,12 @@ metadata:
   name: ota-service
   namespace: device-manager
   annotations:
+    cert-manager.io/cluster-issuer: "cluster-ca-issuer"
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: public
   rules:
-  - host: cluster.petewall.net
+  - host: internal.petewall.net
     http:
       paths:
       - path: /devices/api/update

@@ -1,38 +1,12 @@
 #@ load("@ytt:data", "data")
-resource_types:
-  - name: docker-manifest
-    type: docker-image
-    source:
-      repository: mbialon/concourse-docker-manifest-resource
-
 resources:
   #@ for/end service in data.values.services:
   - name: #@ service.name
-    type: docker-manifest
-    icon: docker
-    source:
-      repository: #@ service.image.repo
-      tag: #@ service.image.tag
-      username: ((dockerhub.username))
-      password: ((dockerhub.password))
-
-  #@ for/end service in data.values.services:
-  - name: #@ service.name + "-amd64"
     type: registry-image
     icon: docker
     source:
       repository: #@ service.image.repo
-      tag: amd64
-      username: ((dockerhub.username))
-      password: ((dockerhub.password))
-
-  #@ for/end service in data.values.services:
-  - name: #@ service.name + "-arm64"
-    type: registry-image
-    icon: docker
-    source:
-      repository: #@ service.image.repo
-      tag: arm64
+      tag: latest
       username: ((dockerhub.username))
       password: ((dockerhub.password))
 
@@ -70,41 +44,7 @@ jobs:
         file: source/ci/tasks/test-units.yaml
 
   #@ for/end service in data.values.services:
-  - name: #@ "build-" + service.name + "-arm64"
-    plan:
-      - get: source
-        resource: #@ service.name + "-source"
-        trigger: true
-        passed:
-          - #@ "test-" + service.name
-      - task: build-image
-        privileged: true
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: concourse/oci-build-task
-              username: ((dockerhub.username))
-              password: ((dockerhub.password))
-          inputs:
-            - name: source
-              path: .
-          outputs:
-            - name: image
-          params:
-            BUILD_ARG_GOOS: linux
-            BUILD_ARG_GOARCH: arm64
-            IMAGE_PLATFORM: linux/arm64
-          run:
-            path: build
-      - put: #@ service.name + "-arm64"
-        inputs: [ image ]
-        params:
-          image: image/image.tar
-
-  #@ for/end service in data.values.services:
-  - name: #@ "build-" + service.name + "-amd64"
+  - name: #@ "build-" + service.name
     plan:
       - get: source
         resource: #@ service.name + "-source"
@@ -132,28 +72,7 @@ jobs:
             IMAGE_PLATFORM: linux/amd64
           run:
             path: build
-      - put: #@ service.name + "-amd64"
+      - put: #@ service.name
         inputs: [ image ]
         params:
           image: image/image.tar
-
-  #@ for/end service in data.values.services:
-  - name: #@ "push-" + service.name
-    plan:
-      - get: #@ service.name + "-amd64"
-        passed:
-          - #@ "build-" + service.name + "-amd64"
-        trigger: true
-      - get: #@ service.name + "-arm64"
-        passed:
-          - #@ "build-" + service.name + "-arm64"
-        trigger: true
-      - put: #@ service.name
-        params:
-          manifests:
-            - arch: amd64
-              os: linux
-              digest_file: #@ service.name + "-amd64/digest"
-            - arch: arm64
-              os: linux
-              digest_file: #@ service.name + "-arm64/digest"
