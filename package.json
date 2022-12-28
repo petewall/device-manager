@@ -1,0 +1,25 @@
+{
+  "name": "device-manager",
+  "version": "1.0.0",
+  "description": "## TODO",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/petewall/device-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/petewall/device-manager/issues"
+  },
+  "homepage": "https://github.com/petewall/device-manager#readme",
+  "dependencies": {
+    "@fastify/static": "^6.6.0",
+    "fastify": "^4.10.2",
+    "jquery": "^3.6.3",
+    "jquery-address": "^1.6.0"
+  }
+}
