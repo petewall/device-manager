@@ -24,6 +24,8 @@
     "jquery-address": "^1.6.0"
   },
   "devDependencies": {
-    "eslint": "^8.30.0"
+    "cypress": "^12.2.0",
+    "eslint": "^8.30.0",
+    "eslint-plugin-cypress": "^2.12.1"
   }
 }
