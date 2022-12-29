@@ -4,14 +4,15 @@
   "description": "## TODO",
   "main": "server.js",
   "scripts": {
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/petewall/device-manager.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Pete Wall <pete@petewall.net>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/petewall/device-manager/issues"
   },
@@ -21,5 +22,8 @@
     "fastify": "^4.10.2",
     "jquery": "^3.6.3",
     "jquery-address": "^1.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.30.0"
   }
 }
