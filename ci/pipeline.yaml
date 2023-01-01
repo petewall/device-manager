@@ -77,7 +77,6 @@ resources:
   type: registry-image
   source:
     repository: golang
-    tag: 1.18-alpine
     username: ((dockerhub.username))
     password: ((dockerhub.password))
 jobs:
