@@ -1,3 +1,10 @@
+resource_types:
+- name: pull-request
+  type: registry-image
+  source:
+    repository: teliaoss/github-pr-resource
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 resources:
 - name: device-service
   type: registry-image
@@ -27,23 +34,44 @@ resources:
   type: git
   icon: github
   source:
-    uri: git@github.com:petewall/device-service.git
+    uri: git@github.com:petewall/device-service
     branch: main
     private_key: ((github.private_key))
+- name: device-service-pull-requests
+  type: pull-request
+  icon: github
+  check_every: 1h
+  source:
+    repository: petewall/device-service
+    access_token: ((github.access_token))
 - name: firmware-service-source
   type: git
   icon: github
   source:
-    uri: git@github.com:petewall/firmware-service.git
+    uri: git@github.com:petewall/firmware-service
     branch: main
     private_key: ((github.private_key))
+- name: firmware-service-pull-requests
+  type: pull-request
+  icon: github
+  check_every: 1h
+  source:
+    repository: petewall/firmware-service
+    access_token: ((github.access_token))
 - name: ota-service-source
   type: git
   icon: github
   source:
-    uri: git@github.com:petewall/ota-service.git
+    uri: git@github.com:petewall/ota-service
     branch: main
     private_key: ((github.private_key))
+- name: ota-service-pull-requests
+  type: pull-request
+  icon: github
+  check_every: 1h
+  source:
+    repository: petewall/ota-service
+    access_token: ((github.access_token))
 - name: golang
   icon: language-go
   type: registry-image
@@ -59,30 +87,6 @@ jobs:
     - get: golang
     - get: source
       resource: device-service-source
-      trigger: true
-  - task: lint
-    file: source/ci/tasks/test-lint.yaml
-  - task: unit-tests
-    image: golang
-    file: source/ci/tasks/test-units.yaml
-- name: test-firmware-service
-  plan:
-  - in_parallel:
-    - get: golang
-    - get: source
-      resource: firmware-service-source
-      trigger: true
-  - task: lint
-    file: source/ci/tasks/test-lint.yaml
-  - task: unit-tests
-    image: golang
-    file: source/ci/tasks/test-units.yaml
-- name: test-ota-service
-  plan:
-  - in_parallel:
-    - get: golang
-    - get: source
-      resource: ota-service-source
       trigger: true
   - task: lint
     file: source/ci/tasks/test-lint.yaml
@@ -122,6 +126,64 @@ jobs:
     - image
     params:
       image: image/image.tar
+- name: test-device-service-pr
+  serial: true
+  plan:
+  - in_parallel:
+    - get: source
+      resource: device-service-pull-requests
+      trigger: true
+      version: every
+      params:
+        integration_tool: rebase
+      on_success:
+        put: device-service-pull-requests
+        inputs: detect
+        params:
+          path: source
+          status: pending
+      on_failure:
+        put: device-service-pull-requests
+        inputs: detect
+        params:
+          path: source
+          context: merge-conflict
+          status: failure
+    - get: golang
+  - task: test
+    image: golang
+    config:
+      platform: linux
+      inputs:
+      - name: source
+      run:
+        dir: source
+        path: make
+        args:
+        - test
+    on_failure:
+      put: device-service-pull-requests
+      inputs: detect
+      params:
+        path: source
+        status: failure
+  - put: device-service-pull-requests
+    inputs: detect
+    params:
+      path: source
+      status: success
+- name: test-firmware-service
+  plan:
+  - in_parallel:
+    - get: golang
+    - get: source
+      resource: firmware-service-source
+      trigger: true
+  - task: lint
+    file: source/ci/tasks/test-lint.yaml
+  - task: unit-tests
+    image: golang
+    file: source/ci/tasks/test-units.yaml
 - name: build-firmware-service
   plan:
   - get: source
@@ -155,6 +217,64 @@ jobs:
     - image
     params:
       image: image/image.tar
+- name: test-firmware-service-pr
+  serial: true
+  plan:
+  - in_parallel:
+    - get: source
+      resource: firmware-service-pull-requests
+      trigger: true
+      version: every
+      params:
+        integration_tool: rebase
+      on_success:
+        put: firmware-service-pull-requests
+        inputs: detect
+        params:
+          path: source
+          status: pending
+      on_failure:
+        put: firmware-service-pull-requests
+        inputs: detect
+        params:
+          path: source
+          context: merge-conflict
+          status: failure
+    - get: golang
+  - task: test
+    image: golang
+    config:
+      platform: linux
+      inputs:
+      - name: source
+      run:
+        dir: source
+        path: make
+        args:
+        - test
+    on_failure:
+      put: firmware-service-pull-requests
+      inputs: detect
+      params:
+        path: source
+        status: failure
+  - put: firmware-service-pull-requests
+    inputs: detect
+    params:
+      path: source
+      status: success
+- name: test-ota-service
+  plan:
+  - in_parallel:
+    - get: golang
+    - get: source
+      resource: ota-service-source
+      trigger: true
+  - task: lint
+    file: source/ci/tasks/test-lint.yaml
+  - task: unit-tests
+    image: golang
+    file: source/ci/tasks/test-units.yaml
 - name: build-ota-service
   plan:
   - get: source
@@ -188,3 +308,49 @@ jobs:
     - image
     params:
       image: image/image.tar
+- name: test-ota-service-pr
+  serial: true
+  plan:
+  - in_parallel:
+    - get: source
+      resource: ota-service-pull-requests
+      trigger: true
+      version: every
+      params:
+        integration_tool: rebase
+      on_success:
+        put: ota-service-pull-requests
+        inputs: detect
+        params:
+          path: source
+          status: pending
+      on_failure:
+        put: ota-service-pull-requests
+        inputs: detect
+        params:
+          path: source
+          context: merge-conflict
+          status: failure
+    - get: golang
+  - task: test
+    image: golang
+    config:
+      platform: linux
+      inputs:
+      - name: source
+      run:
+        dir: source
+        path: make
+        args:
+        - test
+    on_failure:
+      put: ota-service-pull-requests
+      inputs: detect
+      params:
+        path: source
+        status: failure
+  - put: ota-service-pull-requests
+    inputs: detect
+    params:
+      path: source
+      status: success
