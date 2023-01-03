@@ -77,6 +77,7 @@ resources:
   type: registry-image
   source:
     repository: golang
+    tag: 1.19-alpine
     username: ((dockerhub.username))
     password: ((dockerhub.password))
 jobs:
@@ -87,11 +88,9 @@ jobs:
     - get: source
       resource: device-service-source
       trigger: true
-  - task: lint
-    file: source/ci/tasks/test-lint.yaml
-  - task: unit-tests
+  - task: test
     image: golang
-    file: source/ci/tasks/test-units.yaml
+    file: source/ci/tasks/test.yaml
 - name: build-device-service
   plan:
   - get: source
@@ -151,15 +150,7 @@ jobs:
     - get: golang
   - task: test
     image: golang
-    config:
-      platform: linux
-      inputs:
-      - name: source
-      run:
-        dir: source
-        path: make
-        args:
-        - test
+    file: source/ci/tasks/test.yaml
     on_failure:
       put: device-service-pull-requests
       inputs: detect
@@ -178,11 +169,9 @@ jobs:
     - get: source
       resource: firmware-service-source
       trigger: true
-  - task: lint
-    file: source/ci/tasks/test-lint.yaml
-  - task: unit-tests
+  - task: test
     image: golang
-    file: source/ci/tasks/test-units.yaml
+    file: source/ci/tasks/test.yaml
 - name: build-firmware-service
   plan:
   - get: source
@@ -242,15 +231,7 @@ jobs:
     - get: golang
   - task: test
     image: golang
-    config:
-      platform: linux
-      inputs:
-      - name: source
-      run:
-        dir: source
-        path: make
-        args:
-        - test
+    file: source/ci/tasks/test.yaml
     on_failure:
       put: firmware-service-pull-requests
       inputs: detect
@@ -269,11 +250,9 @@ jobs:
     - get: source
       resource: ota-service-source
       trigger: true
-  - task: lint
-    file: source/ci/tasks/test-lint.yaml
-  - task: unit-tests
+  - task: test
     image: golang
-    file: source/ci/tasks/test-units.yaml
+    file: source/ci/tasks/test.yaml
 - name: build-ota-service
   plan:
   - get: source
@@ -333,15 +312,7 @@ jobs:
     - get: golang
   - task: test
     image: golang
-    config:
-      platform: linux
-      inputs:
-      - name: source
-      run:
-        dir: source
-        path: make
-        args:
-        - test
+    file: source/ci/tasks/test.yaml
     on_failure:
       put: ota-service-pull-requests
       inputs: detect

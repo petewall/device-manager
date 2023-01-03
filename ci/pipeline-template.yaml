@@ -42,6 +42,7 @@ resources:
   type: registry-image
   source:
     repository: golang
+    tag: 1.19-alpine
     username: ((dockerhub.username))
     password: ((dockerhub.password))
 
@@ -54,11 +55,9 @@ jobs:
       - get: source
         resource: #@ service.name + "-source"
         trigger: true
-    - task: lint
-      file: source/ci/tasks/test-lint.yaml
-    - task: unit-tests
+    - task: test
       image: golang
-      file: source/ci/tasks/test-units.yaml
+      file: source/ci/tasks/test.yaml
 
 - name: #@ "build-" + service.name
   plan:
@@ -96,46 +95,39 @@ jobs:
 - name: #@ "test-" + service.name + "-pr"
   serial: true
   plan:
-  - in_parallel:
-    - get: source
-      resource: #@ service.name + "-pull-requests"
-      trigger: true
-      version: every
-      params:
-        integration_tool: rebase
-      on_success:
-        put: #@ service.name + "-pull-requests"
-        inputs: detect
+    - in_parallel:
+      - get: source
+        resource: #@ service.name + "-pull-requests"
+        trigger: true
+        version: every
         params:
-          path: source
-          status: pending
+          integration_tool: rebase
+        on_success:
+          put: #@ service.name + "-pull-requests"
+          inputs: detect
+          params:
+            path: source
+            status: pending
+        on_failure:
+          put: #@ service.name + "-pull-requests"
+          inputs: detect
+          params:
+            path: source
+            context: merge-conflict
+            status: failure
+      - get: golang
+    - task: test
+      image: golang
+      file: source/ci/tasks/test.yaml
       on_failure:
         put: #@ service.name + "-pull-requests"
         inputs: detect
         params:
           path: source
-          context: merge-conflict
           status: failure
-    - get: golang
-  - task: test
-    image: golang
-    config:
-      platform: linux
-      inputs:
-        - name: source
-      run:
-        dir: source
-        path: make
-        args: [test]
-    on_failure:
-      put: #@ service.name + "-pull-requests"
+    - put: #@ service.name + "-pull-requests"
       inputs: detect
       params:
         path: source
-        status: failure
-  - put: #@ service.name + "-pull-requests"
-    inputs: detect
-    params:
-      path: source
-      status: success
+        status: success
 #@ end
