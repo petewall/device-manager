@@ -1,0 +1,88 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: device-manager
+  namespace: device-manager
+  annotations:
+    cert-manager.io/cluster-issuer: "cluster-ca-issuer"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: public
+  rules:
+  - host: internal.petewall.net
+    http:
+      paths:
+      - path: /device
+        pathType: Exact
+        backend:
+          service:
+            name: device-manager
+            port:
+              number: 5050
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: device-service
+  namespace: device-manager
+  annotations:
+    cert-manager.io/cluster-issuer: "cluster-ca-issuer"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: public
+  rules:
+  - host: internal.petewall.net
+    http:
+      paths:
+      - path: /device/api
+        pathType: Exact
+        backend:
+          service:
+            name: device-service
+            port:
+              number: 5051
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: firmware-service
+  namespace: device-manager
+  annotations:
+    cert-manager.io/cluster-issuer: "cluster-ca-issuer"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: public
+  rules:
+  - host: internal.petewall.net
+    http:
+      paths:
+      - path: /device/firmware
+        pathType: Exact
+        backend:
+          service:
+            name: firmware-service
+            port:
+              number: 5052
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ota-service
+  namespace: device-manager
+  annotations:
+    cert-manager.io/cluster-issuer: "cluster-ca-issuer"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: public
+  rules:
+  - host: internal.petewall.net
+    http:
+      paths:
+      - path: /device/update
+        pathType: Exact
+        backend:
+          service:
+            name: ota-service
+            port:
+              number: 5053

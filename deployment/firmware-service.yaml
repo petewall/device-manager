@@ -54,7 +54,7 @@ spec:
         name: firmware-service
         env:
           - name: PORT
-            value: "5051"
+            value: "5052"
           - name: FIRMWARE_STORE_TYPE
             value: filesystem
           - name: FILESYSTEM_FIRMWARE_STORE_PATH
@@ -79,28 +79,6 @@ spec:
   selector:
     app: firmware-service
   ports:
-  - port: 5051
+  - port: 5052
     protocol: TCP
-    targetPort: 5051
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: firmware-service
-  namespace: device-manager
-  annotations:
-    cert-manager.io/cluster-issuer: "cluster-ca-issuer"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  ingressClassName: public
-  rules:
-  - host: internal.petewall.net
-    http:
-      paths:
-      - path: /devices/api/firmware
-        pathType: Exact
-        backend:
-          service:
-            name: firmware-service
-            port:
-              number: 5051
+    targetPort: 5052

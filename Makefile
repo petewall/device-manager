@@ -17,4 +17,5 @@ deploy:
 		--file deployment/namespace.yaml \
 		--file deployment/device-service.yaml \
 		--file deployment/firmware-service.yaml \
-		--file deployment/ota-service.yaml
+		--file deployment/ota-service.yaml \
+		--file deployment/ingress.yaml

@@ -99,7 +99,7 @@ spec:
         name: device-service
         env:
           - name: PORT
-            value: "5050"
+            value: "5051"
           - name: DB_HOST
             value: device-service-db.device-manager.svc.cluster.local
           - name: DB_PORT
@@ -117,28 +117,6 @@ spec:
   selector:
     app: device-service
   ports:
-  - port: 5050
+  - port: 5051
     protocol: TCP
-    targetPort: 5050
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: device-service
-  namespace: device-manager
-  annotations:
-    cert-manager.io/cluster-issuer: "cluster-ca-issuer"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  ingressClassName: public
-  rules:
-  - host: internal.petewall.net
-    http:
-      paths:
-      - path: /device/api/devices
-        pathType: Exact
-        backend:
-          service:
-            name: device-service
-            port:
-              number: 5050
+    targetPort: 5051

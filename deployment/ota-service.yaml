@@ -21,7 +21,7 @@ spec:
         name: ota-service
         env:
           - name: PORT
-            value: "5052"
+            value: "5053"
           - name: DEVICE_SERVICE
             value: device-service.device-manager.svc.cluster.local
           - name: FIRMWARE_SERVICE
@@ -39,28 +39,6 @@ spec:
   selector:
     app: ota-service
   ports:
-  - port: 5052
+  - port: 5053
     protocol: TCP
-    targetPort: 5052
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ota-service
-  namespace: device-manager
-  annotations:
-    cert-manager.io/cluster-issuer: "cluster-ca-issuer"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  ingressClassName: public
-  rules:
-  - host: internal.petewall.net
-    http:
-      paths:
-      - path: /devices/api/update
-        pathType: Exact
-        backend:
-          service:
-            name: ota-service
-            port:
-              number: 5052
+    targetPort: 5053
