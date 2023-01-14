@@ -10,4 +10,6 @@ run:
   args:
     - -exc
     - |
-      make test
+      yarn install
+      yarn run lint
+      yarn run test
