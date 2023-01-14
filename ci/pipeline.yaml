@@ -6,6 +6,14 @@ resource_types:
     username: ((dockerhub.username))
     password: ((dockerhub.password))
 resources:
+- name: device-manager
+  type: registry-image
+  icon: docker
+  source:
+    repository: petewall/device-manager
+    tag: latest
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 - name: device-service
   type: registry-image
   icon: docker
@@ -30,6 +38,20 @@ resources:
     tag: latest
     username: ((dockerhub.username))
     password: ((dockerhub.password))
+- name: device-manager-source
+  type: git
+  icon: github
+  source:
+    uri: git@github.com:petewall/device-manager
+    branch: main
+    private_key: ((github.private_key))
+- name: device-manager-pull-requests
+  type: pull-request
+  icon: github
+  check_every: 1h
+  source:
+    repository: petewall/device-manager
+    access_token: ((github.access_token))
 - name: device-service-source
   type: git
   icon: github
@@ -80,7 +102,96 @@ resources:
     tag: 1.19-alpine
     username: ((dockerhub.username))
     password: ((dockerhub.password))
+- name: node
+  icon: language-go
+  type: registry-image
+  source:
+    repository: node
+    tag: 19-alpine
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
 jobs:
+- name: test-device-manager
+  plan:
+  - in_parallel:
+    - get: node
+    - get: source
+      resource: device-manager-source
+      trigger: true
+  - task: test
+    image: node
+    file: source/ci/tasks/test.yaml
+- name: build-device-manager
+  plan:
+  - get: source
+    resource: device-manager-source
+    trigger: true
+    passed:
+    - test-device-manager
+  - task: build-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+          username: ((dockerhub.username))
+          password: ((dockerhub.password))
+      inputs:
+      - name: source
+        path: .
+      outputs:
+      - name: image
+      params:
+        BUILD_ARG_GOOS: linux
+        BUILD_ARG_GOARCH: amd64
+        IMAGE_PLATFORM: linux/amd64
+      run:
+        path: build
+  - put: device-manager
+    inputs:
+    - image
+    params:
+      image: image/image.tar
+- name: test-device-manager-pr
+  serial: true
+  plan:
+  - in_parallel:
+    - get: source
+      resource: device-manager-pull-requests
+      trigger: true
+      version: every
+      params:
+        integration_tool: rebase
+      on_success:
+        put: device-manager-pull-requests
+        inputs: detect
+        params:
+          path: source
+          status: pending
+      on_failure:
+        put: device-manager-pull-requests
+        inputs: detect
+        params:
+          path: source
+          context: merge-conflict
+          status: failure
+    - get: node
+  - task: test
+    image: node
+    file: source/ci/tasks/test.yaml
+    on_failure:
+      put: device-manager-pull-requests
+      inputs: detect
+      params:
+        path: source
+        status: failure
+  - put: device-manager-pull-requests
+    inputs: detect
+    params:
+      path: source
+      status: success
 - name: test-device-service
   plan:
   - in_parallel:

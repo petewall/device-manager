@@ -46,17 +46,26 @@ resources:
     username: ((dockerhub.username))
     password: ((dockerhub.password))
 
+- name: node
+  icon: language-go
+  type: registry-image
+  source:
+    repository: node
+    tag: 19-alpine
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
+
 jobs:
 #@ for service in data.values.services:
 - name: #@ "test-" + service.name
   plan:
     - in_parallel:
-      - get: golang
+      - get: #@ service.language
       - get: source
         resource: #@ service.name + "-source"
         trigger: true
     - task: test
-      image: golang
+      image: #@ service.language
       file: source/ci/tasks/test.yaml
 
 - name: #@ "build-" + service.name
@@ -115,9 +124,9 @@ jobs:
             path: source
             context: merge-conflict
             status: failure
-      - get: golang
+      - get: #@ service.language
     - task: test
-      image: golang
+      image: #@ service.language
       file: source/ci/tasks/test.yaml
       on_failure:
         put: #@ service.name + "-pull-requests"

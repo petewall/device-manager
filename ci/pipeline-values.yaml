@@ -1,7 +1,17 @@
 #@data/values
 ---
 services:
+- name: device-manager
+  language: node
+  repo:
+      owner: petewall
+      name: device-manager
+  branch: main
+  image:
+    repo: petewall/device-manager
+    tag: latest
 - name: device-service
+  language: golang
   repo:
       owner: petewall
       name: device-service
@@ -10,6 +20,7 @@ services:
     repo: petewall/device-service
     tag: latest
 - name: firmware-service
+  language: golang
   repo:
       owner: petewall
       name: firmware-service
@@ -18,6 +29,7 @@ services:
     repo: petewall/firmware-service
     tag: latest
 - name: ota-service
+  language: golang
   repo:
       owner: petewall
       name: ota-service
