@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "start-server-and-test start http://localhost:3000 cypress run"
   },
   "repository": {
     "type": "git",
@@ -18,14 +19,19 @@
   },
   "homepage": "https://github.com/petewall/device-manager#readme",
   "dependencies": {
+    "@fastify/helmet": "^10.1.0",
     "@fastify/static": "^6.6.0",
+    "@fastify/view": "^7.4.0",
+    "ejs": "^3.1.8",
     "fastify": "^4.11.0",
     "jquery": "^3.6.3",
-    "jquery-address": "^1.6.0"
+    "jquery-address": "^1.6.0",
+    "superagent": "^8.0.6"
   },
   "devDependencies": {
     "cypress": "^12.3.0",
     "eslint": "^8.31.0",
-    "eslint-plugin-cypress": "^2.12.1"
+    "eslint-plugin-cypress": "^2.12.1",
+    "start-server-and-test": "^1.15.2"
   }
 }

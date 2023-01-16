@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Firmware Service</title>
+  <script src="/lib/jquery/dist/jquery.min.js"></script>
+  <script src="/lib/jquery-address/src/jquery.address.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.0/dist/semantic.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.0/dist/semantic.min.js"></script>
+
+  <!-- <script src="/lib/socket.io/socket.io.js"></script> -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+  <link rel="manifest" href="/static/site.webmanifest">
+  <link rel="stylesheet" type="text/css" href="/static/style.css">
+</head>
+
+<body class="ui container">
+  <div class="ui stackable two column grid container segment">
+
+    <div class="ui column">
+      <h2 class="ui header">
+        <i class="microchip icon"></i>
+        <div class="content">Devices</div>
+      </h2>
+
+      <table class="ui celled table" id="device-table">
+        <thead>
+          <tr>
+            <th>MAC</th>
+            <!-- <th>Uptime</th> -->
+            <th>Last Update Request</th>
+            <th>Current Firmware</th>
+            <th>Assigned Firmware</th>
+            <!-- <th>Assigned Version</th> -->
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="ui column">
+      <h2 class="ui header">
+        <i class="compact disc icon"></i>
+        <div class="content">Firmware</div>
+      </h2>
+      <div class="ui column styled accordion">
+        <% if (firmwareTypes.length == 0) { %>
+          <h3 class="ui centered header">No Firmware</h3>
+        <% } %>
+
+        <% firmwareTypes.forEach(function(firmwareType) { %>
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <%= firmwareType %>
+          <div class="right aligned ui label"><%= firmware[firmwareType][0].version %></div>
+        </div>
+        <div class="content">
+          <% firmware[firmwareType].forEach(function(firmware) { %>
+            <p><%= firmware.version %></p>
+          <% }); %>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+    <script>
+      $('.ui.accordion').accordion()
+    </script>
+  </div>
+</body>
+</html>
