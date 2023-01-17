@@ -5,7 +5,7 @@ const fastifyStatic = require('@fastify/static')
 const path = require('path')
 const superagent = require('superagent')
 
-// const deviceService = process.env.DEVICE_SERVICE || 'http://localhost:3001'
+const deviceService = process.env.DEVICE_SERVICE || 'http://localhost:3001'
 const firmwareService = process.env.FIRMWARE_SERVICE || 'http://localhost:3002'
 
 const port = process.env.PORT || 3000
@@ -18,7 +18,7 @@ fastify.register(require('@fastify/view'), {
 })
 
 fastify.get('/', async function (req, reply) {
-  const res = await superagent.get(`${firmwareService}/`)
+  const res = await superagent.get(`${deviceService}/`)
   const deviceList = JSON.parse(res.text)
 
   const res2 = await superagent.get(`${firmwareService}/`)

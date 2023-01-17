@@ -1,0 +1,8 @@
+#@ load("@ytt:data", "data")
+---
+  mac: #@ data.values.mac
+  currentFirmware: #@ data.values.currentFirmware
+  currentVersion: #@ data.values.currentVersion
+  assignedFirmware: #@ data.values.assignedFirmware
+  assignedVersion: #@ data.values.assignedVersion
+  acceptsPrerelease: false

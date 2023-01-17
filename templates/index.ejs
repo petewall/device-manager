@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
   <link rel="manifest" href="/static/site.webmanifest">
-  <link rel="stylesheet" type="text/css" href="/static/style.css">
+  <!-- <link rel="stylesheet" type="text/css" href="/static/style.css"> -->
 </head>
 
 <body class="ui container">
@@ -36,7 +36,16 @@
             <!-- <th>Assigned Version</th> -->
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <% deviceList.forEach(function(device) { %>
+            <tr>
+              <td><%= device.mac %></td>
+              <td>???</td>
+              <td><%= device.currentFirmware %> <%= device.currentVersion %></td>
+              <td><%= device.assignedFirmware %> <%= device.assignedVersion %></td>
+            </tr>
+          <% }); %>
+        </tbody>
       </table>
     </div>
 
