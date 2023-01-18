@@ -1,5 +1,6 @@
 #@ load("@ytt:data", "data")
 ---
+  name: new device
   mac: #@ data.values.mac
   currentFirmware: #@ data.values.currentFirmware
   currentVersion: #@ data.values.currentVersion

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Firmware Service</title>
+  <title>Device Manager</title>
   <script src="/lib/jquery/dist/jquery.min.js"></script>
   <script src="/lib/jquery-address/src/jquery.address.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.0/dist/semantic.min.css">
@@ -17,65 +17,110 @@
 </head>
 
 <body class="ui container">
-  <div class="ui stackable two column grid container segment">
+  <div class="ui top attached inverted menu">
+    <a class="active item" data-tab="devices">
+      <i class="microchip icon"></i>
+      Devices
+    </a>
+    <a class="item" data-tab="firmware">
+      <i class="compact disc icon"></i>
+      Firmware
+    </a>
+  </div>
+
+  <!-- Devices tab -->
+  <div class="ui bottom attached active tab segment" data-tab="devices">
+    <h2 class="ui header">
+      <i class="microchip icon"></i>
+      <div class="content">Devices</div>
+    </h2>
+
+    <table class="ui celled table" id="device-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>MAC</th>
+          <th>Last Update Request</th>
+          <th>Current Firmware</th>
+          <th>Assigned Firmware</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% deviceList.forEach(function(device) { %>
+          <tr>
+            <td class="ui input">
+              <input type="text" value="???">
+            </td>
+            <td><%= device.mac %></td>
+            <td>???</td>
+            <td><%= device.currentFirmware %> <%= device.currentVersion %></td>
+            <td>
+              <div class="ui fluid search selection dropdown">
+                <input type="hidden" name="firmwareType" value="<%= device.assignedFirmware %>">
+                <i class="dropdown icon"></i>
+                <div class="default text">Type</div>
+                <div class="menu">
+                  <% firmwareTypes.forEach(function(firmwareType) { %>
+                  <div class="item" data-value="<%= firmwareType %>"><%= firmwareType %></div>
+                  <% }); %>
+                </div>
+              </div>
+
+              <%= device.assignedVersion %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Firmware tab -->
+  <div class="ui bottom attached tab segment" data-tab="firmware">
+    <h2 class="ui header">
+      <i class="compact disc icon"></i>
+      <div class="content">Firmware</div>
+    </h2>
 
     <div class="ui column">
-      <h2 class="ui header">
-        <i class="microchip icon"></i>
-        <div class="content">Devices</div>
-      </h2>
-
-      <table class="ui celled table" id="device-table">
+      <% if (firmwareTypes.length == 0) { %>
+      <h3 class="ui centered header">No Firmware</h3>
+      <% } else { %>
+      <table class="ui celled table" id="firmware-table">
         <thead>
           <tr>
-            <th>MAC</th>
-            <!-- <th>Uptime</th> -->
-            <th>Last Update Request</th>
-            <th>Current Firmware</th>
-            <th>Assigned Firmware</th>
-            <!-- <th>Assigned Version</th> -->
+            <th>Type</th>
+            <th>Version</th>
+            <th>Downloads</th>
+            <th>Download</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
-          <% deviceList.forEach(function(device) { %>
+          <% firmwareTypes.forEach(function(firmwareType) { %>
+            <% firmware[firmwareType].forEach(function(firmware) { %>
             <tr>
-              <td><%= device.mac %></td>
+              <td><%= firmwareType %></td>
+              <td><%= firmware.version %></td>
               <td>???</td>
-              <td><%= device.currentFirmware %> <%= device.currentVersion %></td>
-              <td><%= device.assignedFirmware %> <%= device.assignedVersion %></td>
+              <td><i class="cloud download alternate icon"></i></td>
+              <td><i class="trash alternate icon"></i></td>
             </tr>
+            <% }); %>
           <% }); %>
         </tbody>
       </table>
-    </div>
 
-    <div class="ui column">
-      <h2 class="ui header">
-        <i class="compact disc icon"></i>
-        <div class="content">Firmware</div>
-      </h2>
-      <div class="ui column styled accordion">
-        <% if (firmwareTypes.length == 0) { %>
-          <h3 class="ui centered header">No Firmware</h3>
-        <% } %>
-
-        <% firmwareTypes.forEach(function(firmwareType) { %>
-        <div class="title">
-          <i class="dropdown icon"></i>
-          <%= firmwareType %>
-          <div class="right aligned ui label"><%= firmware[firmwareType][0].version %></div>
-        </div>
-        <div class="content">
-          <% firmware[firmwareType].forEach(function(firmware) { %>
-            <p><%= firmware.version %></p>
-          <% }); %>
-        </div>
-        <% }); %>
-      </div>
+      <% } %>
     </div>
-    <script>
-      $('.ui.accordion').accordion()
-    </script>
   </div>
+  <script>
+    $('.ui.menu .item').tab({
+      history: true,
+      historyType: 'hash'
+    })
+    $('.ui.selection.dropdown').dropdown({
+      clearable: true
+    })
+  </script>
 </body>
 </html>
