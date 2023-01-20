@@ -1,7 +1,4 @@
-.PHONY: set-pipeline
-
-deploy-device-manager: deployment/device-service.yaml
-	kapp deploy -a device-manager -f deployment --diff-changes
+.PHONY: deploy set-pipeline
 
 ci/pipeline.yaml: ci/pipeline-template.yaml ci/pipeline-values.yaml
 	ytt -f ci/pipeline-template.yaml -f ci/pipeline-values.yaml > ci/pipeline.yaml

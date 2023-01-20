@@ -1,6 +1,7 @@
 #!/usr/local/bin/node
 
 const fastify = require('fastify')({ logger: true })
+const fastifyHttpProxy = require('@fastify/http-proxy')
 const fastifyStatic = require('@fastify/static')
 const path = require('path')
 const superagent = require('superagent')
@@ -38,6 +39,16 @@ fastify.get('/', async function (req, reply) {
   await reply.view('/templates/index.ejs', {
     deviceList, firmware, firmwareTypes
   })
+})
+
+fastify.register(fastifyHttpProxy, {
+  upstream: deviceService,
+  prefix: '/api/device'
+})
+
+fastify.register(fastifyHttpProxy, {
+  upstream: firmwareService,
+  prefix: '/api/firmware'
 })
 
 fastify.register(fastifyStatic, {
