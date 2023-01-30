@@ -33,6 +33,6 @@
     "cypress": "^12.3.0",
     "eslint": "^8.32.0",
     "eslint-plugin-cypress": "^2.12.1",
-    "start-server-and-test": "^1.15.2"
+    "start-server-and-test": "^1.15.3"
   }
 }
