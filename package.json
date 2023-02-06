@@ -30,7 +30,7 @@
     "superagent": "^8.0.9"
   },
   "devDependencies": {
-    "cypress": "^12.3.0",
+    "cypress": "^12.5.1",
     "eslint": "^8.33.0",
     "eslint-plugin-cypress": "^2.12.1",
     "start-server-and-test": "^1.15.3"
