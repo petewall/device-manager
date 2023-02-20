@@ -14,3 +14,15 @@ The device manager is a series of microservices that manage devices, mainly ESP8
 * internal.petewall.net/device/api
 * internal.petewall.net/device/update
 * internal.petewall.net/device/firmware
+
+
+## Plan
+
+### Run
+
+* Remove the calls internally, create js files that do the requests and build the page.
+
+### Test
+
+* Start mock servers for device, firmware, and ota services
+* Test functions in the js files and ensure the right requests are being called

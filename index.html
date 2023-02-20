@@ -16,6 +16,39 @@
   <!-- <link rel="stylesheet" type="text/css" href="/static/style.css"> -->
 </head>
 
+<template id="deviceRow">
+  <tr>
+    <td class="ui input">
+      <input class="deviceName" type="text" value="???" />
+    </td>
+    <td class="deviceMAC"></td>
+    <td class="lastUpdate"></td>
+    <td class="currentVersion"><%= device.currentFirmware %> <%= device.currentVersion %></td>
+    <td>
+      <div class="ui fluid search selection dropdown">
+        <input type="hidden" name="firmwareType" value="<%= device.assignedFirmware %>">
+        <i class="dropdown icon"></i>
+        <div class="default text">Type</div>
+        <div class="menu">
+<!--          <% firmwareTypes.forEach(function(firmwareType) { %>-->
+<!--          <div class="item" data-value="<%= firmwareType %>"><%= firmwareType %></div>-->
+<!--          <% }); %>-->
+        </div>
+      </div>
+    </td>
+  </tr>
+</template>
+
+<template id="firmwareRow">
+  <tr>
+    <td class="firmwareType"></td>
+    <td class="firmwareVersion"></td>
+    <td class="downloadCount">Unknown</td>
+    <td class="downloadFirmware"><i class="cloud download alternate icon"></i></td>
+    <td class="deleteFirmware"><i class="trash alternate icon"></i></td>
+  </tr>
+</template>
+
 <body class="ui container">
   <div class="ui top attached inverted menu">
     <a class="active item" data-tab="devices">
@@ -35,43 +68,24 @@
       <div class="content">Devices</div>
     </h2>
 
-    <table class="ui celled table" id="device-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>MAC</th>
-          <th>Last Update Request</th>
-          <th>Current Firmware</th>
-          <th>Assigned Firmware</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% deviceList.forEach(function(device) { %>
+    <div class="ui device column">
+      <div class="ui active dimmer">
+        <div class="ui text loader">Loading Devices</div>
+      </div>
+      <table class="ui celled device table">
+        <thead>
           <tr>
-            <td class="ui input">
-              <input type="text" value="???">
-            </td>
-            <td><%= device.mac %></td>
-            <td>???</td>
-            <td><%= device.currentFirmware %> <%= device.currentVersion %></td>
-            <td>
-              <div class="ui fluid search selection dropdown">
-                <input type="hidden" name="firmwareType" value="<%= device.assignedFirmware %>">
-                <i class="dropdown icon"></i>
-                <div class="default text">Type</div>
-                <div class="menu">
-                  <% firmwareTypes.forEach(function(firmwareType) { %>
-                  <div class="item" data-value="<%= firmwareType %>"><%= firmwareType %></div>
-                  <% }); %>
-                </div>
-              </div>
-
-              <%= device.assignedVersion %>
-            </td>
+            <th>Name</th>
+            <th>MAC</th>
+            <th>Last Update Request</th>
+            <th>Current Firmware</th>
+            <th>Assigned Firmware</th>
           </tr>
-        <% }); %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Firmware tab -->
@@ -81,11 +95,11 @@
       <div class="content">Firmware</div>
     </h2>
 
-    <div class="ui column">
-      <% if (firmwareTypes.length == 0) { %>
-      <h3 class="ui centered header">No Firmware</h3>
-      <% } else { %>
-      <table class="ui celled table" id="firmware-table">
+    <div class="ui firmware column">
+      <div class="ui active dimmer">
+        <div class="ui text loader">Loading Firmware</div>
+      </div>
+      <table class="ui celled firmware table">
         <thead>
           <tr>
             <th>Type</th>
@@ -95,24 +109,12 @@
             <th>Delete</th>
           </tr>
         </thead>
-        <tbody>
-          <% firmwareTypes.forEach(function(firmwareType) { %>
-            <% firmware[firmwareType].forEach(function(firmware) { %>
-            <tr>
-              <td><%= firmwareType %></td>
-              <td><%= firmware.version %></td>
-              <td>???</td>
-              <td><i class="cloud download alternate icon"></i></td>
-              <td><i class="trash alternate icon"></i></td>
-            </tr>
-            <% }); %>
-          <% }); %>
-        </tbody>
+        <tbody></tbody>
       </table>
-
-      <% } %>
     </div>
   </div>
+
+  <script src="/static/firmware.js"></script>
   <script>
     $('.ui.menu .item').tab({
       history: true,
@@ -121,6 +123,8 @@
     $('.ui.selection.dropdown').dropdown({
       clearable: true
     })
+
+    loadAllFirmware()
   </script>
 </body>
 </html>

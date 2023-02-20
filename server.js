@@ -4,7 +4,6 @@ const fastify = require('fastify')({ logger: true })
 const fastifyHttpProxy = require('@fastify/http-proxy')
 const fastifyStatic = require('@fastify/static')
 const path = require('path')
-const superagent = require('superagent')
 
 const deviceService = process.env.DEVICE_SERVICE || 'http://localhost:3001'
 const firmwareService = process.env.FIRMWARE_SERVICE || 'http://localhost:3002'
@@ -12,33 +11,9 @@ const firmwareService = process.env.FIRMWARE_SERVICE || 'http://localhost:3002'
 const port = process.env.PORT || 3000
 
 fastify.register(require('@fastify/helmet'))
-fastify.register(require('@fastify/view'), {
-  engine: {
-    ejs: require('ejs'),
-  },
-})
 
-fastify.get('/', async function (req, reply) {
-  const res = await superagent.get(`${deviceService}/`)
-  const deviceList = JSON.parse(res.text)
-
-  const res2 = await superagent.get(`${firmwareService}/`)
-  const firmwareList = JSON.parse(res2.text)
-  
-  const firmware = {}
-  firmwareList.forEach((item) => {
-    if (firmware[item.type]) {
-      firmware[item.type].push(item)
-      firmware[item.type].sort().reverse()
-    } else {
-      firmware[item.type] = [item]
-    }
-  })
-  const firmwareTypes = Object.keys(firmware).sort()
-
-  await reply.view('/templates/index.ejs', {
-    deviceList, firmware, firmwareTypes
-  })
+fastify.get('/', function (req, reply) {
+  reply.sendFile('index.html')
 })
 
 fastify.register(fastifyHttpProxy, {
