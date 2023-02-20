@@ -144,16 +144,15 @@ jobs:
       outputs:
       - name: image
       params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: amd64
-        IMAGE_PLATFORM: linux/amd64
+        IMAGE_PLATFORM: linux/amd64,linux/arm64
+        OUTPUT_OCI: true
       run:
         path: build
   - put: device-manager
     inputs:
     - image
     params:
-      image: image/image.tar
+      image: image/image
 - name: test-device-manager-pr
   serial: true
   plan:
@@ -225,16 +224,15 @@ jobs:
       outputs:
       - name: image
       params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: amd64
-        IMAGE_PLATFORM: linux/amd64
+        IMAGE_PLATFORM: linux/amd64,linux/arm64
+        OUTPUT_OCI: true
       run:
         path: build
   - put: device-service
     inputs:
     - image
     params:
-      image: image/image.tar
+      image: image/image
 - name: test-device-service-pr
   serial: true
   plan:
@@ -306,16 +304,15 @@ jobs:
       outputs:
       - name: image
       params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: amd64
-        IMAGE_PLATFORM: linux/amd64
+        IMAGE_PLATFORM: linux/amd64,linux/arm64
+        OUTPUT_OCI: true
       run:
         path: build
   - put: firmware-service
     inputs:
     - image
     params:
-      image: image/image.tar
+      image: image/image
 - name: test-firmware-service-pr
   serial: true
   plan:
@@ -387,16 +384,15 @@ jobs:
       outputs:
       - name: image
       params:
-        BUILD_ARG_GOOS: linux
-        BUILD_ARG_GOARCH: amd64
-        IMAGE_PLATFORM: linux/amd64
+        IMAGE_PLATFORM: linux/amd64,linux/arm64
+        OUTPUT_OCI: true
       run:
         path: build
   - put: ota-service
     inputs:
     - image
     params:
-      image: image/image.tar
+      image: image/image
 - name: test-ota-service-pr
   serial: true
   plan:

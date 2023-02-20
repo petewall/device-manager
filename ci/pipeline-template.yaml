@@ -91,15 +91,14 @@ jobs:
         outputs:
           - name: image
         params:
-          BUILD_ARG_GOOS: linux
-          BUILD_ARG_GOARCH: amd64
-          IMAGE_PLATFORM: linux/amd64
+          IMAGE_PLATFORM: linux/amd64,linux/arm64
+          OUTPUT_OCI: true
         run:
           path: build
     - put: #@ service.name
       inputs: [ image ]
       params:
-        image: image/image.tar
+        image: image/image
 
 - name: #@ "test-" + service.name + "-pr"
   serial: true
