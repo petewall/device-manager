@@ -20,7 +20,7 @@
   "homepage": "https://github.com/petewall/device-manager#readme",
   "dependencies": {
     "@fastify/helmet": "^10.1.0",
-    "@fastify/http-proxy": "^8.4.0",
+    "@fastify/http-proxy": "^9.0.0",
     "@fastify/static": "^6.9.0",
     "fastify": "^4.13.0",
     "jquery": "^3.6.3",
