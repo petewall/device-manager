@@ -22,7 +22,7 @@
     "@fastify/helmet": "^10.1.0",
     "@fastify/http-proxy": "^8.4.0",
     "@fastify/static": "^6.9.0",
-    "fastify": "^4.13.0",
+    "fastify": "^4.16.3",
     "jquery": "^3.6.3",
     "jquery-address": "^1.6.0"
   },
